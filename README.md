@@ -14,11 +14,13 @@ Forced Alignment takes as input an audio file and a transcript of what has been 
 
 The library takes as input the text (English text, pinyin transcription, Chinese characters, ...) and the audio. The inputs are ".lab" files containing the text and ".wav" audio files. The outputs are ".TextGrid" files containing the start and end time of each word and phoneme.
 
-Currently, there is only an acoustic model for the alignment of Chinese characters and no pinyin model. However, a pinyin model would be much better. AISHELL-3 provides more accurate information with pinyin, which we could use.
+Currently, there is only an acoustic model for the alignment of Chinese characters and no pinyin model. However, a pinyin model would be much better. AISHELL-3 provides more accurate information with pinyin, which we could use. Also, the MFA dictionary model does not treat Erhua and other aspects of Chinese phonology correctly.
 
-## Generated TextGrid files
+Therefore, I trained my own model, using a dictionary based on IPA.
 
-Instead of following the instruction below, you can also download the files from the releases.
+## Generated TextGrid files and pretrained model
+
+Instead of following the instruction below, you can also download the generated files from the releases.
 
 ## Instruction
 
@@ -31,10 +33,9 @@ Change the PATH variable to your output path (e.g. /home/SSD).
 
 ### Perform alignment
 
-1. python preprocess.py (change PATH in the script)
-2. conda create -n aligner -c conda-forge montreal-forced-aligner
-3. conda activate aligner
-4. mfa model download acoustic mandarin_mfa
-5. mfa model download dictionary mandarin_china_mfa
-6. mfa align PATH mandarin_china_mfa mandarin_mfa PATH
+1. conda create -n aligner -c conda-forge montreal-forced-aligner
+2. conda activate aligner
+3. python preprocess.py (change PATH in the script)
+4. python create_dictionary.py
+6. mfa train PATH aishell3_pinyin_dictionary.txt aishell3_pinyin_acoustic.zip --output_directory PATH --num_jobs 32 --temporary_directory TEMP_DIR --clean --use_mp --use_threading (change TEMP_DIR and num_jobs)
 7. python postprocess.py

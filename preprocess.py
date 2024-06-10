@@ -1,10 +1,8 @@
 from tqdm import tqdm
 import os
+import re
 
 DATASET_PATH = "/home/SSD/dataset/"
-USE_PINYIN = False
-# add spacing to treat every character as a single word
-ADD_SPACING = True
 
 # fantizi, japanese characters, uncommon characters
 REPLACE_HANZI = {'聖':'圣',
@@ -37,7 +35,7 @@ REPLACE_HANZI = {'聖':'圣',
 MANUAL_FIXES = {"SSB17450244.wav": "他 ta1 不 bu2 到 dao4 两 liang3 岁 sui4 的 de5 儿 er2 子 zi5 碰 peng4 触 chu4 车 che1 钥 yao4 匙 shi5",
                 "SSB09660370.wav": "偶 ou3 像 xiang4 喜 xi3 剧 ju4 电 dian4 视 shi4 剧 ju4 有 you3 什 shen2 么 me5"}
 
-def get_sentences(dataset_path):
+def get_sentences(dataset_path, remove_tone=True):
     for folder in ["train", "test"]:
         path = os.path.join(dataset_path, folder)
         with open(os.path.join(path, "content.txt"), "r") as f:
@@ -60,12 +58,12 @@ def get_sentences(dataset_path):
             
             processed_pinyin = []
             for p in pinyin:
-                # handle erhua: change dianr3 to dian3 r5
-                if p != "r5" and p[:-1] != "er" and p[-2] == "r":
-                    processed_pinyin.extend([p[:-2] + p[-1] + " r5"])
-                else:
-                    processed_pinyin.append(p)
-
+                assert p[-1].isdigit()
+                if remove_tone:
+                    p = p[:-1]
+                    assert p.isalpha()
+                processed_pinyin.append(p)
+            
             assert len(processed_pinyin) == len(processed_hanzi)
 
             yield {"word":list(zip(processed_pinyin, processed_hanzi)),
@@ -77,12 +75,8 @@ def main():
     for sentence in tqdm(get_sentences(DATASET_PATH)):
         processed_text = ""
         for pinyin, hanzi in sentence['word']:
-            if USE_PINYIN:
-                processed_text += pinyin
-            else:
-                processed_text += hanzi
-            if ADD_SPACING:
-                processed_text += " "
+            processed_text += pinyin
+            processed_text += " "
 
         with open(os.path.join(DATASET_PATH, sentence['split'], "wav",
                                sentence['speaker'],

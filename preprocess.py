@@ -1,4 +1,3 @@
-from tqdm import tqdm
 import os
 import re
 
@@ -72,7 +71,7 @@ def get_sentences(dataset_path, remove_tone=True):
                    "id": wav_filename.replace('.wav', '')}
 
 def main():
-    for sentence in tqdm(get_sentences(DATASET_PATH)):
+    for sentence in get_sentences(DATASET_PATH):
         processed_text = ""
         for pinyin, hanzi in sentence['word']:
             processed_text += pinyin

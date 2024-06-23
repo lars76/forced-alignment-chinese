@@ -27,15 +27,15 @@ Instead of following the instruction below, you can also download the generated 
 ### Download dataset
 
 1. Download data_aishell3.tgz from https://www.openslr.org/93/
-2. Extract the archive to the chosen path: tar xzf data_aishell3.tgz -C PATH
+2. Extract the archive to the chosen path: `tar xzf data_aishell3.tgz -C PATH`
 
 Change the PATH variable to your output path (e.g. /home/SSD).
 
 ### Perform alignment
 
-1. conda create -n aligner -c conda-forge montreal-forced-aligner
-2. conda activate aligner
-3. python preprocess.py (change PATH in the script)
-4. pip install pinyin_to_ipa and python create_dictionary.py
-6. mfa train PATH aishell3_pinyin_dictionary.txt aishell3_pinyin_acoustic.zip --output_directory PATH --num_jobs 32 --temporary_directory TEMP_DIR --clean --use_mp --use_threading (change TEMP_DIR and num_jobs)
-7. python postprocess.py
+1. `conda create -n aligner -c conda-forge montreal-forced-aligner`
+2. `conda activate aligner`
+3. `python preprocess.py` (change PATH in the script)
+4. `pip install pinyin_to_ipa` and `python create_dictionary.py`
+6. `mfa train PATH aishell3_pinyin_dictionary.txt aishell3_pinyin_acoustic.zip --output_directory PATH --num_jobs 32 --temporary_directory TEMP_DIR --clean --use_mp --use_threading` (change TEMP_DIR and num_jobs)
+7. `pip install tgt` and `python postprocess.py`

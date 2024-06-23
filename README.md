@@ -33,7 +33,7 @@ Change the PATH variable to your output path (e.g. /home/SSD).
 
 ### Perform alignment
 
-1. conda create -n aligner -c conda-forge montreal-forced-aligner
+1. conda create -n aligner -c conda-forge montreal-forced-aligner pinyin_to_ipa
 2. conda activate aligner
 3. python preprocess.py (change PATH in the script)
 4. python create_dictionary.py

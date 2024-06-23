@@ -1,5 +1,4 @@
 from pinyin_to_ipa import pinyin_to_ipa
-from tqdm import tqdm
 from preprocess import get_sentences, DATASET_PATH
 
 DICTIONARY_NAME = "aishell3_pinyin_dictionary"
@@ -7,22 +6,22 @@ DICTIONARY_NAME = "aishell3_pinyin_dictionary"
 def pinyin_to_ipa_erhua(pinyin):
     ipas = list(pinyin_to_ipa(pinyin[:-1]))
     suffix_to_ipa = {
-        "anr": "ɐʵ",
+        "anr": "ɐ ɻ",
         "enr": "ɚ", "inr": "ɚ", "unr": "ɚ",
-        "angr": "ɑ̃ʵ",
-        "engr": "ɤ̃ʵ", "ingr": "ɤ̃ʵ",
-        "iongr": "ʊ̃ʵ", "ongr": "ʊ̃ʵ",
+        "angr": "ɑ̃ ɻ",
+        "engr": "ɤ̃ ɻ", "ingr": "ɤ̃ ɻ",
+        "iongr": "ʊ̃ ɻ", "ongr": "ʊ̃ ɻ",
         "our": "ou̯˞",
-        "iur": "ou̯ʵ",
+        "iur": "ou̯ ɻ",
         "aor": "ou̯˞",
-        "iaor": "ɑu̯ʵ",
+        "iaor": "ɑu̯ ɻ",
         "eir": "ɚ", "uir": "ɚ",
-        "air": "ɐʵ",
-        "ier": "ɛʵ",
-        "uer": "œʵ",
-        "er": "ɤʵ",
-        "or": "ɔʵ",
-        "ar": "ɐʵ",
+        "air": "ɐ ɻ",
+        "ier": "ɛ ɻ",
+        "uer": "œ ɻ",
+        "er": "ɤ ɻ",
+        "or": "ɔ ɻ",
+        "ar": "ɐ ɻ",
         "ir": "ɚ",
         "ur": "u˞",
         "vr": "ɚ"
@@ -52,7 +51,7 @@ def is_erhua(pinyin):
 
 def main():
     pinyins = set()
-    for sentence in tqdm(get_sentences(DATASET_PATH)):
+    for sentence in get_sentences(DATASET_PATH):
         for pinyin, hanzi in sentence['word']:
             pinyins.add(pinyin)
     pinyins = sorted(pinyins)

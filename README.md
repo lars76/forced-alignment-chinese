@@ -24,12 +24,12 @@ Instead of following the instruction below, you can also download the generated 
 
 | Dataset    | Model | TextGrid |
 |------------|-------|----------|
-| AISHELL-3  | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/aishell3_pinyin/aishell3_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/aishell3_textgrid_files/aishell3_textgrid_files.zip)    |
-| biaobei    | [url] | [url]    |
+| AISHELL-3  | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/model_files/aishell3_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/textgrid_files/aishell3_textgrid_files.zip)    |
+| biaobei    | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/model_files/biaobei_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/textgrid_files/biaobei_textgrid_files.zip)    |
 
 ## Instruction
 
-## Download dataset(s)
+### Download dataset(s)
 
 - AISHELL-3: https://www.openslr.org/93/
 - biaobei: https://en.data-baker.com/datasets/freeDatasets/

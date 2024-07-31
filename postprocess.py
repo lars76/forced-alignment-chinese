@@ -66,7 +66,7 @@ def process_dataset(dataset_path: str, processor: object) -> None:
         try:
             textgrid_new = process_textgrid(text_grid_file, sentence)
             tgt.write_to_file(textgrid_new, text_grid_file, format="long")
-        except Exception as e:
+        except Exception:
             break
 
 

@@ -139,15 +139,19 @@ class Aishell3Processor(DatasetProcessor):
 
 
 class GeneralProcessor(DatasetProcessor):
-    def convert_characters_to_pinyin(self, conv, text: str) -> List[str]:
-        predicted_pinyin = conv(text)[0]
-        return " ".join([p for p in predicted_pinyin if p is not None])
+    def convert_characters_to_pinyin(self, conv, texts: List[str]) -> List[str]:
+        predicted_pinyins = conv(texts)
+        return [
+            " ".join([p for p in pinyin if p is not None])
+            for pinyin in predicted_pinyins
+        ]
 
     def process(
         self,
         dataset_path: str,
         remove_tone: bool = True,
         character_type: str = "simplified",
+        batch_size: int = 32,
     ) -> Generator[Dict[str, Any], None, None]:
         try:
             from g2pw import G2PWConverter
@@ -166,37 +170,61 @@ class GeneralProcessor(DatasetProcessor):
                 continue
             speaker_name = os.path.basename(speaker_folder)
 
-            for lab_file in tqdm(
-                glob.glob(os.path.join(speaker_folder, "*.hanzi")), desc=speaker_name
-            ):
-                with open(lab_file, "r") as f:
-                    chinese_text = f.read().strip()
+            lab_files = glob.glob(os.path.join(speaker_folder, "*.hanzi"))
+            for i in tqdm(range(0, len(lab_files), batch_size), desc=speaker_name):
+                batch_files = lab_files[i : i + batch_size]
 
-                pinyin_file = lab_file.replace(".hanzi", ".pinyin")
-                if os.path.exists(pinyin_file):
-                    with open(pinyin_file, "r") as f:
-                        pinyin_text = f.read()
-                else:
-                    pinyin_text = self.convert_characters_to_pinyin(conv, chinese_text)
-                    with open(pinyin_file, "w") as f:
-                        f.write(pinyin_text)
+                chinese_texts = []
+                pinyin_texts = []
 
-                hanzi = self.process_hanzi(self.process_text(chinese_text))
+                for lab_file in batch_files:
+                    with open(lab_file, "r") as f:
+                        chinese_text = f.read().strip()
+                    chinese_texts.append(chinese_text)
 
-                pinyin = self.process_pinyin(pinyin_text, hanzi, remove_tone)
+                    pinyin_file = lab_file.replace(".hanzi", ".pinyin")
+                    if os.path.exists(pinyin_file):
+                        with open(pinyin_file, "r") as f:
+                            pinyin_text = f.read()
+                        pinyin_texts.append(pinyin_text)
+                    else:
+                        pinyin_texts.append(None)
 
-                id_str = os.path.basename(lab_file).replace(".hanzi", "")
-                if len(pinyin) != len(hanzi):
-                    print(pinyin, hanzi)
-                    print(f"Warning: Mismatch in lengths for ID {id_str}")
-                    continue
+                missing_pinyin_indices = [
+                    i for i, pt in enumerate(pinyin_texts) if pt is None
+                ]
+                if missing_pinyin_indices:
+                    missing_chinese_texts = [
+                        chinese_texts[i] for i in missing_pinyin_indices
+                    ]
+                    converted_pinyins = self.convert_characters_to_pinyin(
+                        conv, missing_chinese_texts
+                    )
 
-                yield {
-                    "word": list(zip(pinyin, hanzi)),
-                    "wav_path": os.path.basename(speaker_folder),
-                    "speaker": speaker_name,
-                    "id": id_str,
-                }
+                    for idx, pinyin in zip(missing_pinyin_indices, converted_pinyins):
+                        pinyin_texts[idx] = pinyin
+                        pinyin_file = batch_files[idx].replace(".hanzi", ".pinyin")
+                        with open(pinyin_file, "w") as f:
+                            f.write(pinyin)
+
+                for lab_file, chinese_text, pinyin_text in zip(
+                    batch_files, chinese_texts, pinyin_texts
+                ):
+                    hanzi = self.process_hanzi(self.process_text(chinese_text))
+                    pinyin = self.process_pinyin(pinyin_text, hanzi, remove_tone)
+                    id_str = os.path.basename(lab_file).replace(".hanzi", "")
+
+                    if len(pinyin) != len(hanzi):
+                        print(pinyin, hanzi)
+                        print(f"Warning: Mismatch in lengths for ID {id_str}")
+                        continue
+
+                    yield {
+                        "word": list(zip(pinyin, hanzi)),
+                        "wav_path": os.path.basename(speaker_folder),
+                        "speaker": speaker_name,
+                        "id": id_str,
+                    }
 
 
 class BiaobeiProcessor(DatasetProcessor):

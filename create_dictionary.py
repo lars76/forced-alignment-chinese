@@ -65,7 +65,7 @@ def apply_erhua(pinyin: str, ipa: List[str]) -> List[str]:
             for ipa_ending in ipa_endings:
                 if ipa[-1] == ipa_ending[0]:
                     ipa_ending = ipa_ending[1:]
-                elif ipa[-1] + "˞" == ipa_ending[0]: # wur
+                elif ipa[-1] + "˞" == ipa_ending[0]:  # wur
                     ipa = []
                 result.append(ipa + ipa_ending)
             break
@@ -125,11 +125,9 @@ def generate_dictionary_entries(pinyins: Set[str]) -> List[Tuple[str, str]]:
         entries.extend(
             (
                 pinyin,
-                " ".join(ipa)
-                .replace("ʵ", " ɻ")
-                .replace("˞", " ɻ")
-                #.replace("ɚ", "ə ɻ") schwa is too short
-                #.replace("aə", "a"),
+                " ".join(ipa).replace("ʵ", " ɻ").replace("˞", " ɻ"),
+                # .replace("ɚ", "ə ɻ") schwa is too short
+                # .replace("aə", "a"),
             )
             for ipa in ipas
         )

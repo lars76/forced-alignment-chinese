@@ -66,7 +66,8 @@ def process_dataset(dataset_path: str, processor: object) -> None:
             break
 
         textgrid_new = process_textgrid(text_grid_file, sentence)
-        #tgt.write_to_file(textgrid_new, text_grid_file, format="long")
+        tgt.write_to_file(textgrid_new, text_grid_file, format="long")
+
 
 def main():
     for dataset_path in glob.glob(os.path.join(DATASET_PATH, "*")):

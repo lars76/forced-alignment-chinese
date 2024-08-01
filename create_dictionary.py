@@ -1,9 +1,10 @@
 import glob
 import os
 from typing import Set, List, Tuple
-from preprocess import get_processor, DATASET_PATH
+from utils import get_processor
 from pinyin_to_ipa import pinyin_to_ipa
 
+DATASET_PATH = "datasets"
 DICTIONARY_NAME = "pinyin_dictionary"
 
 # Dictionary for erhua transformations
@@ -17,7 +18,7 @@ ERHUA_SUFFIX_TO_IPA = {
     "ianr": [["j", "ɐʵ"]],
     "iaor": [["j", "ɑu̯˞"]],
     "uanr": [["w", "ɐʵ"]],
-    "engr": [["ɤ̃ʵ"], ["ʊ̃˞"]],
+    "engr": [["ɤ̃ʵ"]],
     "angr": [["ɑ̃ʵ"]],
     "ongr": [["w", "ɤ̃ʵ"], ["ʊ̃˞"]],
     "ingr": [["j", "ɤ̃ʵ"]],
@@ -62,9 +63,10 @@ def apply_erhua(pinyin: str, ipa: List[str]) -> List[str]:
     for pinyin_ending, ipa_endings in ERHUA_SUFFIX_TO_IPA.items():
         if pinyin.endswith(pinyin_ending) and pinyin != pinyin_ending:
             for ipa_ending in ipa_endings:
-                # Remove first character of ipa_ending if it matches the last character of ipa
                 if ipa[-1] == ipa_ending[0]:
                     ipa_ending = ipa_ending[1:]
+                elif ipa[-1] + "˞" == ipa_ending[0]: # wur
+                    ipa = []
                 result.append(ipa + ipa_ending)
             break
     return result
@@ -96,14 +98,22 @@ def convert_pinyin_to_ipa(pinyin: str) -> List[List[str]]:
     return ipa_output
 
 
-def process_dataset(dataset_path: str, dataset_name: str) -> Set[str]:
-    pinyins = set()
+def write_read_pinyins(dataset_path: str, dataset_name: str) -> Set[str]:
     processor = get_processor(dataset_name)
-    if processor:
-        for sentence in processor.process(dataset_path):
-            pinyins.update(pinyin for pinyin, _ in sentence["word"])
-    else:
-        print(f"No processor found for dataset: {dataset_name}")
+    pinyins = set()
+    for sentence in processor.process(dataset_path):
+        pinyins.update(pinyin for pinyin, _ in sentence["word"])
+
+        processed_text = " ".join(pinyin for pinyin, _ in sentence["word"])
+
+        output_path = os.path.join(
+            dataset_path, sentence["wav_path"], f"{sentence['id']}.lab"
+        )
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        with open(output_path, "w") as text_output:
+            text_output.write(processed_text.strip())
+
     print(f"Number of pinyins: {len(pinyins)}")
     return pinyins
 
@@ -112,7 +122,19 @@ def generate_dictionary_entries(pinyins: Set[str]) -> List[Tuple[str, str]]:
     entries = []
     for pinyin in pinyins:
         ipas = convert_pinyin_to_ipa(pinyin)
-        entries.extend((pinyin, " ".join(ipa).replace("ʵ", " ɻ")) for ipa in ipas)
+        entries.extend(
+            (
+                pinyin,
+                " ".join(ipa)
+                .replace("ʵ", " ɻ")
+                .replace("˞", " ɻ")
+                #.replace("ɚ", "ə ɻ") schwa is too short
+                #.replace("aə", "a"),
+            )
+            for ipa in ipas
+        )
+
+    print(f"Number of phones: {len(set(k for _, v in entries for k in v.split()))}")
     return sorted(set(entries))
 
 
@@ -123,14 +145,17 @@ def write_dictionary(entries: List[Tuple[str, str]], filename: str) -> None:
 
 
 def main():
-    for dataset_path in glob.glob(os.path.join(DATASET_PATH, "*")):
+    for dataset_path in sorted(glob.glob(os.path.join(DATASET_PATH, "*"))):
         if not os.path.isdir(dataset_path):
             continue
 
         dataset_name = os.path.basename(dataset_path)
         print(f"Processing dataset: {dataset_name}")
 
-        pinyins = process_dataset(dataset_path, dataset_name)
+        print("Generating lab files...")
+        pinyins = write_read_pinyins(dataset_path, dataset_name)
+
+        print("Generating dictionary...")
         entries = generate_dictionary_entries(pinyins)
         write_dictionary(entries, f"{dataset_name}_{DICTIONARY_NAME}.txt")
 

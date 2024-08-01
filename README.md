@@ -1,6 +1,6 @@
 # Forced Alignment for Chinese Speech
 
-This repository shows how the Chinese speech datasets can be aligned using *Montreal Forced Aligner* 3.1. Annotations and models are provided for several popular datasets (AISHELL-3, biaobei).
+This repository shows how the Chinese speech datasets can be aligned using *Montreal Forced Aligner*. Annotations and models are provided for several popular datasets (AISHELL-3, biaobei).
 
 ![Alt text](praat.jpg?raw=true)
 
@@ -34,21 +34,35 @@ Instead of following the instruction below, you can also download the generated 
 - AISHELL-3: https://www.openslr.org/93/
 - biaobei: https://en.data-baker.com/datasets/freeDatasets/
 
-Extract the datasets to `datasets/biaobei` and `datasets/aishell3`.
+Extract the downloaded datasets to the following directories: `datasets/aishell3`, `datasets/biaobei`.
+
+For custom datasets, create a directory `datasets/general` with the following structure:
+
+```
+datasets/general/
+├── SPEAKER_NAME_1/
+│ ├── text_1.hanzi (with Chinese text, e.g., 对不起)
+│ ├── text_1.wav (corresponding audio file)
+│ ...
+├── SPEAKER_NAME_2/
+│ ├── text_2.hanzi
+│ ├── text_2.wav
+│ ...
+├── ...
+```
 
 ### Prepare alignment
 
 1. `conda create -n aligner -c conda-forge montreal-forced-aligner`
 2. `conda activate aligner`
-3. `python preprocess.py`
-4. `pip install pinyin_to_ipa` and `python create_dictionary.py`
+3. `pip install pinyin_to_ipa` and `python create_dictionary.py`
 
 ### Perform alignment
 
 In the following change TEMP_DIR and num_jobs.
 
 1. `mfa train datasets/biaobei biaobei_pinyin_dictionary.txt biaobei_pinyin_acoustic.zip --output_directory datasets/biaobei --num_jobs 1 --temporary_directory TEMP_DIR --clean --use_mp --use_threading`.
-2. `mfa train datasets/aishell3 aishell3_pinyin_dictionary.txt biaobei_pinyin_acoustic.zip --output_directory datasets/aishell3 --num_jobs 32 --temporary_directory TEMP_DIR --clean --use_mp --use_threading`.
+2. `mfa train datasets/aishell3 aishell3_pinyin_dictionary.txt aishell3_pinyin_acoustic.zip --output_directory datasets/aishell3 --num_jobs 32 --temporary_directory TEMP_DIR --clean --use_mp --use_threading`.
 
 ### Post-processing
 

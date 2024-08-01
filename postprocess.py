@@ -3,7 +3,8 @@ import tgt
 import os
 from copy import copy
 from typing import Dict, List, Tuple
-from preprocess import get_processor, DATASET_PATH
+from utils import get_processor
+from create_dictionary import DATASET_PATH
 
 
 def create_new_tier(
@@ -25,8 +26,9 @@ def create_new_tier(
 def process_textgrid(textgrid_path: str, sentence: Dict) -> tgt.core.TextGrid:
     textgrid = tgt.io.read_textgrid(textgrid_path)
 
-    if not textgrid.has_tier("words") or not textgrid.has_tier("phones"):
-        raise ValueError(f"Warning: {textgrid_path} was already preprocessed.")
+    if not textgrid.has_tier("words"):
+        print(f"Warning: {textgrid_path} was already post-processed.")
+        return textgrid
 
     pinyin_tier = textgrid.get_tier_by_name("words")
     phones_tier = textgrid.get_tier_by_name("phones")
@@ -60,15 +62,11 @@ def process_dataset(dataset_path: str, processor: object) -> None:
         )
 
         if not os.path.exists(text_grid_file):
-            print(f"Dataset {dataset_path} is missing TextGrid files")
+            print(f"Dataset {dataset_path} is missing TextGrid file {text_grid_file}")
             break
 
-        try:
-            textgrid_new = process_textgrid(text_grid_file, sentence)
-            tgt.write_to_file(textgrid_new, text_grid_file, format="long")
-        except Exception:
-            break
-
+        textgrid_new = process_textgrid(text_grid_file, sentence)
+        #tgt.write_to_file(textgrid_new, text_grid_file, format="long")
 
 def main():
     for dataset_path in glob.glob(os.path.join(DATASET_PATH, "*")):

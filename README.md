@@ -20,12 +20,12 @@ Therefore, I trained my own model, using a dictionary based on IPA.
 
 ## Generated TextGrid files and pretrained model
 
-Instead of following the instruction below, you can also download the generated files from the [releases](https://github.com/lars76/forced-alignment-aishell/releases).
+Instead of following the instruction below, you can also download the generated files from the [releases](https://github.com/lars76/forced-alignment-chinese/releases).
 
 | Dataset    | Model | TextGrid |
 |------------|-------|----------|
-| AISHELL-3  | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/model_files/aishell3_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/textgrid_files/aishell3_textgrid_files.zip)    |
-| biaobei    | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/model_files/biaobei_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-aishell/releases/download/textgrid_files/biaobei_textgrid_files.zip)    |
+| AISHELL-3  | [url](https://github.com/lars76/forced-alignment-chinese/releases/download/model_files/aishell3_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-chinese/releases/download/textgrid_files/aishell3_textgrid_files.zip)    |
+| biaobei    | [url](https://github.com/lars76/forced-alignment-chinese/releases/download/model_files/biaobei_pinyin.zip) | [url](https://github.com/lars76/forced-alignment-chinese/releases/download/textgrid_files/biaobei_textgrid_files.zip)    |
 
 ## Instruction
 

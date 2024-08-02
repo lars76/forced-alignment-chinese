@@ -31,7 +31,6 @@ class DatasetProcessor(ABC):
         hanzi_len = len(hanzi)
         i = 0
         hanzi_index = 0
-
         while i < len(words):
             current_word = words[i]
             next_word = words[i + 1] if i + 1 < len(words) else ""
@@ -40,18 +39,17 @@ class DatasetProcessor(ABC):
                 and hanzi_index < hanzi_len
                 and hanzi[hanzi_index].endswith("儿")
             )
-
             if append_er and current_word[-2] != "r":
-                result.append(
-                    current_word[:-1] + "r" if remove_tone else current_word + "r"
-                )
+                if remove_tone:
+                    result.append(current_word[:-1] + "r")
+                else:
+                    tone = current_word[-1]
+                    result.append(current_word[:-1] + "r" + tone)
                 i += 2  # Skip the next word
             else:
                 result.append(current_word[:-1] if remove_tone else current_word)
                 i += 1
-
             hanzi_index += 1
-
         return result
 
     @staticmethod

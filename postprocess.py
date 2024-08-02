@@ -63,7 +63,7 @@ def process_dataset(dataset_path: str, processor: object) -> None:
 
         if not os.path.exists(text_grid_file):
             print(f"Dataset {dataset_path} is missing TextGrid file {text_grid_file}")
-            break
+            continue
 
         textgrid_new = process_textgrid(text_grid_file, sentence)
         tgt.write_to_file(textgrid_new, text_grid_file, format="long")

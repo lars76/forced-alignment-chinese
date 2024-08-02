@@ -59,9 +59,9 @@ datasets/general/
 
 ### Perform alignment
 
-In the following change TEMP_DIR and num_jobs.
+In the following change TEMP_DIR and num_jobs. Make sure that TEMP_DIR is an absolute path or the training might fail.
 
-1. `mfa train datasets/biaobei biaobei_pinyin_dictionary.txt biaobei_pinyin_acoustic.zip --output_directory datasets/biaobei --num_jobs 1 --temporary_directory TEMP_DIR --clean --use_mp --use_threading`.
+1. `mfa train datasets/biaobei biaobei_pinyin_dictionary.txt biaobei_pinyin_acoustic.zip --output_directory datasets/biaobei --num_jobs 1 --temporary_directory tmp_dir1 --clean --use_mp --use_threading --single_speaker`.
 2. `mfa train datasets/aishell3 aishell3_pinyin_dictionary.txt aishell3_pinyin_acoustic.zip --output_directory datasets/aishell3 --num_jobs 32 --temporary_directory TEMP_DIR --clean --use_mp --use_threading`.
 
 ### Post-processing

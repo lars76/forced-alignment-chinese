@@ -6,6 +6,10 @@ from pinyin_to_ipa import pinyin_to_ipa
 
 DATASET_PATH = "datasets"
 DICTIONARY_NAME = "pinyin_dictionary"
+# dianr can be transcribed as [tjɐʵ] or [tjɐɻ]
+# either we consider ɐʵ as one or two phones
+# separating phones can make it harder to find the start and stop times
+SPLIT_PHONEMES = []  # [("ʵ", " ɻ"), ("˞", " ɻ"), ("ɚ", "ə ɻ"), ("aə", "a")]
 
 # Dictionary for erhua transformations
 # https://en.wikipedia.org/wiki/Erhua#Standard_rules
@@ -122,15 +126,12 @@ def generate_dictionary_entries(pinyins: Set[str]) -> List[Tuple[str, str]]:
     entries = []
     for pinyin in pinyins:
         ipas = convert_pinyin_to_ipa(pinyin)
-        entries.extend(
-            (
-                pinyin,
-                " ".join(ipa).replace("ʵ", " ɻ").replace("˞", " ɻ"),
-                # .replace("ɚ", "ə ɻ") schwa is too short
-                # .replace("aə", "a"),
-            )
-            for ipa in ipas
-        )
+
+        for ipa in ipas:
+            str_ipa = " ".join(ipa)
+            for s0, s1 in SPLIT_PHONEMES:
+                str_ipa = str_ipa.replace(s0, s1)
+            entries.extend((pinyin, str_ipa))
 
     print(f"Number of phones: {len(set(k for _, v in entries for k in v.split()))}")
     return sorted(set(entries))

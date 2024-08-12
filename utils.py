@@ -4,7 +4,7 @@ import glob
 import string
 from tqdm import tqdm
 from abc import ABC, abstractmethod
-from typing import Dict, List, Generator, Any, Tuple
+from typing import Dict, List, Generator, Any
 
 
 class DatasetProcessor(ABC):
